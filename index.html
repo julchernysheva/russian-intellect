@@ -505,6 +505,9 @@ svg{width:100%;height:100%;display:block}
 .hist-node.hover-focus:not(.selected) .years{
  fill:var(--warm)!important;
 }
+
+/* V17.9.11 — corrected full-map home fit:
+   all people, technology labels and company endpoints fit at reset/home. */
 </style>
 </head>
 <body>
@@ -524,7 +527,7 @@ svg{width:100%;height:100%;display:block}
  <div id="thirdnavWrap" class="thirdnav-wrap"><nav id="thirdnav" class="thirdnav"></nav></div>
 </header>
 <section class="stage" id="stage">
- <svg id="map" viewBox="8 26 1788 860" preserveAspectRatio="xMidYMid meet" aria-label="Генеалогия людей, технологий и компаний">
+ <svg id="map" viewBox="-12 8 1882 955" preserveAspectRatio="xMidYMid meet" aria-label="Генеалогия людей, технологий и компаний">
   <g id="grid"></g><g id="historicalEdges"></g><g id="historicalLabels"></g><g id="modernEdges"></g><g id="modernLabels"></g><g id="historicalNodes"></g><g id="modernNodes"></g>
  </svg>
  <button id="resetZoomBtn" class="reset-zoom-btn is-home" type="button" aria-label="Сбросить масштаб и вернуть карту">СБРОСИТЬ МАСШТАБ</button>
@@ -915,8 +918,8 @@ let HOVERED_ID=null;
 let HOVER_CLEAR_TIMER=null;
 let IS_PANNING=false;
 let SUPPRESS_MAP_CLICK=false;
-const CONTENT_BOUNDS={x:8,y:26,w:1788,h:860};
-const VIEW_HOME={x:8,y:26,w:1788,h:860};
+const CONTENT_BOUNDS={x:-12,y:8,w:1882,h:955};
+const VIEW_HOME={x:-12,y:8,w:1882,h:955};
 const VIEW_LIMITS={minW:VIEW_HOME.w/1.70,maxW:VIEW_HOME.w};
 let CURRENT_VIEW={...VIEW_HOME};
 
@@ -935,10 +938,11 @@ function clampView(view){
  view.w=Math.max(VIEW_LIMITS.minW,Math.min(VIEW_HOME.w,view.w));
  view.h=view.w*ratio;
 
- const minX=CONTENT_BOUNDS.x;
- const maxX=CONTENT_BOUNDS.x+CONTENT_BOUNDS.w-view.w;
- const minY=CONTENT_BOUNDS.y;
- const maxY=CONTENT_BOUNDS.y+CONTENT_BOUNDS.h-view.h;
+ const safe=4;
+ const minX=CONTENT_BOUNDS.x-safe;
+ const maxX=CONTENT_BOUNDS.x+CONTENT_BOUNDS.w+safe-view.w;
+ const minY=CONTENT_BOUNDS.y-safe;
+ const maxY=CONTENT_BOUNDS.y+CONTENT_BOUNDS.h+safe-view.h;
 
  // If the viewport is larger than the content in one dimension,
  // center it instead of exposing blank space.
